@@ -6,7 +6,7 @@
 
 `Test.ps1` compiles and runs these fixtures, then runs the built executable with `-List -NoUI` and an invalid argument using separate temporary configuration folders. It checks process exit codes, expected log messages, absence of saved device-pair configuration, and equality of all playback/capture default role IDs before and after. It does not issue switching commands or install the application. The release ZIP is checked for its exact three-file allowlist and matching EXE hash.
 
-The role snapshots are observations: concurrent external audio changes can fail the check and are not silently ignored.
+The role snapshots are observations: concurrent external audio changes can fail the check and are not silently ignored. A headless runner can have no default audio endpoint; only the specific Windows `E_NOTFOUND` result is recorded as an absent-endpoint marker and compared before/after. Other COM errors still fail the check. An unchanged absent endpoint is not evidence of hardware routing.
 
 ## Historical hardware evidence (2026-10-10 / 2026-10-11)
 

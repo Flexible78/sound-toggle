@@ -15,7 +15,17 @@ $flowType = $assembly.GetType('SoundToggleWin11.EDataFlow')
 $roleType = $assembly.GetType('SoundToggleWin11.ERole')
 function Get-RoleSnapshot {
     $values = foreach ($flow in 0,1) { foreach ($role in 0,1,2) {
-        $id = $audio.GetMethod('DefaultIdForRole').Invoke($null, @([Enum]::ToObject($flowType,$flow),[Enum]::ToObject($roleType,$role)))
+        try {
+            $id = $audio.GetMethod('DefaultIdForRole').Invoke($null, @([Enum]::ToObject($flowType,$flow),[Enum]::ToObject($roleType,$role)))
+        } catch {
+            $cause = $_.Exception
+            while ($cause.InnerException) { $cause = $cause.InnerException }
+            if ($cause -is [Runtime.InteropServices.COMException] -and $cause.HResult -eq -2147023728) {
+                # E_NOTFOUND is expected on headless runners with no default audio endpoint.
+                # Preserve it in the snapshot; other COM failures must still fail the test.
+                $id = '<no-default-endpoint>'
+            } else { throw }
+        }
         '{0}:{1}:{2}' -f $flow,$role,$id
     } }
     return ($values -join "`n")
