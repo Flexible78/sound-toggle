@@ -1,0 +1,9 @@
+/dist/
+*.exe
+*.zip
+*.lnk
+*.log
+**/devices.json
+*.pdf
+.vs/
+__pycache__/
